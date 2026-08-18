@@ -37,11 +37,19 @@ public class TodoService
         return item;
     }
 
-    public TodoItem? MarkAsCompleted(int id)
+    public TodoItem? MarkAsComplete(int id)
     {
         var item = GetById(id);
         if (item == null) return null;
         item.IsCompleted = true;
+        return item;
+    }
+
+    public TodoItem? MarkAsIncomplete(int id)
+    {
+        var item = GetById(id);
+        if (item == null) return null;
+        item.IsCompleted = false;
         return item;
     }
 
