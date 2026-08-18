@@ -5,11 +5,10 @@ using TodoApi.Models;
 public class TodoService
 {
     private List<TodoItem> _todoItems = new List<TodoItem>();
-    private int _count = 0;
 
-    public List<TodoItem> GetAll()
+    public IEnumerable<TodoItem> GetAll()
     {
-        return _todoItems;
+        return _todoItems.ToList();
     }
 
     public TodoItem? GetById(int id)
@@ -19,10 +18,9 @@ public class TodoService
 
     public TodoItem Create(string title)
     {
-        _count = _count + _todoItems.Count;
         var item = new TodoItem
         {
-            Id = _count,
+            Id = _todoItems.Count > 0 ? _todoItems.Max(i => i.Id) + 1 : 1,
             Title = title,
             IsCompleted = false
         };
