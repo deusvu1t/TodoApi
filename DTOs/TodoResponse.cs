@@ -1,6 +1,7 @@
-﻿namespace TodoApi.Models;
+﻿namespace TodoApi.DTOs;
 
-public class TodoItem
+
+public class TodoResponse
 {
     public int Id { get; init; }
     public string Title { get; set; } = "";
