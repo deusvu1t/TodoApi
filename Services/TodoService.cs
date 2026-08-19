@@ -1,63 +1,71 @@
 ﻿namespace TodoApi.Services;
 
+using Microsoft.EntityFrameworkCore;
+using TodoApi.Data;
 using TodoApi.Models;
 
 public class TodoService
 {
-    private List<TodoItem> _todoItems = new List<TodoItem>();
+    private TodoDbContext _todoDb;
 
-    public IEnumerable<TodoItem> GetAll()
+    public TodoService(TodoDbContext todoDb) => _todoDb = todoDb;
+
+    public async Task<IEnumerable<TodoItem>> GetAll()
     {
-        return _todoItems.ToList();
+        return await _todoDb.TodoItems.ToListAsync();
     }
 
-    public TodoItem? GetById(int id)
+    public async Task<TodoItem?> GetById(int id)
     {
-        return _todoItems.FirstOrDefault(item => item.Id == id);
+        return await _todoDb.TodoItems.FirstOrDefaultAsync(item => item.Id == id);
     }
 
-    public TodoItem Create(string title)
+    public async Task<TodoItem> Create(string title)
     {
         var item = new TodoItem
         {
-            Id = _todoItems.Count > 0 ? _todoItems.Max(i => i.Id) + 1 : 1,
             Title = title,
-            IsCompleted = false
+            IsComplete = false
         };
-        _todoItems.Add(item);
+        _todoDb.TodoItems.Add(item);
+        await _todoDb.SaveChangesAsync();
         return item;
     }
 
-    public TodoItem? Update(int id, string title)
+    public async Task<TodoItem?> Update(int id, string title)
     {
-        var item = GetById(id);
+        var item = await GetById(id);
         if (item == null) return null;
 
         item.Title = title;
+        await _todoDb.SaveChangesAsync();
         return item;
     }
 
-    public TodoItem? MarkAsComplete(int id)
+    public async Task<TodoItem?> MarkAsComplete(int id)
     {
-        var item = GetById(id);
+        var item = await GetById(id);
         if (item == null) return null;
-        item.IsCompleted = true;
+        item.IsComplete = true;
+        await _todoDb.SaveChangesAsync();
         return item;
     }
 
-    public TodoItem? MarkAsIncomplete(int id)
+    public async Task<TodoItem?> MarkAsIncomplete(int id)
     {
-        var item = GetById(id);
+        var item = await GetById(id);
         if (item == null) return null;
-        item.IsCompleted = false;
+        item.IsComplete = false;
+        await _todoDb.SaveChangesAsync();
         return item;
     }
 
-    public bool Delete(int id)
+    public async Task<bool> Delete(int id)
     {
-        var item = GetById(id);
+        var item = await GetById(id);
         if (item == null) return false;
-        _todoItems.Remove(item);
+        _todoDb.TodoItems.Remove(item);
+        await _todoDb.SaveChangesAsync();
         return true;
     }
 }
